@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f1ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d1316" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kam gre denar">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>Kam gre denar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Dela+Gothic+One&display=swap">
+<style>
+/* Layout: phone-first app. Sticky top bar (wordmark, tabs, period switcher), then stacked cards; two columns from 900px. */
+:root{
+  --pink:#ffd3ee; --wine:#651a32; --coral:#f4714f; --olive:#8e9a3b; --sky:#bcd2f0; --cream:#fff8ec;
+  --bg:#f6f1ee; --surface:#fffdfa; --surface-2:#f1e9e6; --field:#f4eeea; --hl:var(--pink); --hl-field:#fff7fb; --fg:var(--wine); --muted:#8d5168;
+  --line:rgba(101,26,50,.16); --accent:var(--coral); --on-accent:#fff; --btn:var(--wine); --on-btn:#fff8ec;
+  --deco-1:var(--olive); --deco-2:#a9c3ea;
+  --inc-sp:var(--olive); --inc-job:#7fa3d6; --exp:var(--coral);
+  --good:#5d7a12; --warn:#c0581c; --bad:#b3243f;
+  --c0:#a88595; --c1:#7a1f3d; --c2:#f4714f; --c3:#8e9a3b; --c4:#6f98d0; --c5:#e05aa0; --c6:#d29a1f; --c7:#3f8f86; --c8:#8a5aa8;
+  --display:"Dela Gothic One","Arial Black","Helvetica Neue",sans-serif;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-pill:999px; --r-card:22px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#1d1316; --surface:#2a1c21; --surface-2:#3a2a30; --field:#34252b; --hl:#4a1b30; --hl-field:#3a1425; --fg:#ffd3ee; --muted:#d59bb5;
+  --line:rgba(255,211,238,.16); --accent:#ff8665; --on-accent:#2a0c18; --btn:#ffd3ee; --on-btn:#3a1425;
+  --deco-1:#a7b350; --deco-2:#7f9fd0;
+  --inc-sp:#b5c25a; --inc-job:#9dbde8; --exp:#ff8665;
+  --good:#b5c25a; --warn:#ffa064; --bad:#ff6f89;
+  --c0:#a8899a; --c1:#e88aab; --c2:#ff8a6a; --c3:#b9c45e; --c4:#9dbde8; --c5:#f08cc0; --c6:#e9bd4f; --c7:#6cc0b5; --c8:#b98fd6;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#1d1316; --surface:#2a1c21; --surface-2:#3a2a30; --field:#34252b; --hl:#4a1b30; --hl-field:#3a1425; --fg:#ffd3ee; --muted:#d59bb5;
+  --line:rgba(255,211,238,.16); --accent:#ff8665; --on-accent:#2a0c18; --btn:#ffd3ee; --on-btn:#3a1425;
+  --deco-1:#a7b350; --deco-2:#7f9fd0;
+  --inc-sp:#b5c25a; --inc-job:#9dbde8; --exp:#ff8665;
+  --good:#b5c25a; --warn:#ffa064; --bad:#ff6f89;
+  --c0:#a8899a; --c1:#e88aab; --c2:#ff8a6a; --c3:#b9c45e; --c4:#9dbde8; --c5:#f08cc0; --c6:#e9bd4f; --c7:#6cc0b5; --c8:#b98fd6;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;color-scheme:light}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:14px 12px;display:grid;gap:12px;position:relative}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{font-family:var(--display);font-size:22px;line-height:.86;letter-spacing:-.01em;text-transform:uppercase;margin:0}
+.mark span{display:block}
+.mark span:nth-child(2){padding-left:.9em}
+.zig{width:44px;height:30px;flex:none}
+.status{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:var(--r-pill);border:1.5px solid currentColor;white-space:nowrap;color:var(--muted)}
+.status.cloud{color:var(--good)} .status.demo{color:var(--warn)}
+.navrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.tabs{display:flex;gap:6px;background:var(--surface-2);padding:4px;border-radius:var(--r-pill)}
+.tabs button{border:0;background:transparent;padding:8px 16px;border-radius:var(--r-pill);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--btn);color:var(--on-btn)}
+.period{display:flex;align-items:center;gap:4px}
+.period button{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:18px;line-height:1;display:grid;place-items:center}
+.period .lbl{min-width:9.5em;text-align:center;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:13px}
+.period .today{width:auto;border-radius:var(--r-pill);padding:0 10px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+
+main{padding-block:18px 48px}
+.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:2px dashed var(--accent);border-radius:16px;padding:12px 16px;margin-bottom:16px;font-weight:600}
+.banner p{margin:0;max-width:60ch}
+.grid{display:grid;gap:16px}
+@media (min-width:900px){ .grid.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start} }
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--surface);border-radius:var(--r-card);padding:20px;min-width:0}
+.card h2{font-family:var(--display);font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:.01em;margin:0 0 4px;text-wrap:balance}
+.card .sub{margin:0 0 16px;color:var(--muted);font-size:13px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* hero */
+.hero{background:var(--btn);color:var(--on-btn);position:relative;overflow:hidden}
+.hero .eyebrow{color:inherit;opacity:.75}
+.big{font-family:var(--display);font-size:clamp(38px,9vw,56px);line-height:1;margin:6px 0 4px;letter-spacing:-.01em}
+.hero .of{font-weight:600;opacity:.85;margin:0 0 14px}
+.meter{height:14px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--on-btn) 18%,transparent);overflow:hidden;position:relative}
+.meter i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .4s ease}
+.meter.over i{background:var(--bad)}
+.hero .meter.over i{background:var(--accent);background-image:repeating-linear-gradient(-45deg,transparent 0 6px,rgba(0,0,0,.18) 6px 12px)}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+.mini{border-top:1.5px solid color-mix(in srgb,var(--on-btn) 30%,transparent);padding-top:8px;min-width:0}
+.mini b{display:block;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:var(--r-pill);background:var(--surface-2);color:var(--fg)}
+.pill.good{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.hero .pill{background:var(--accent);color:var(--on-accent)}
+
+/* forms */
+.field{display:grid;gap:6px;min-width:0}
+.field label,.lbl-s{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=date],input[inputmode]{width:100%;min-width:0;background:var(--field);border:2px solid transparent;border-radius:14px;padding:11px 14px;font-weight:600;font-size:16px}
+input:focus{outline:none;border-color:var(--accent)}
+input::placeholder{color:var(--muted);opacity:.8;font-weight:500}
+.amount-in{font-family:var(--display);font-size:30px!important;padding:10px 16px!important}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:var(--r-pill);background:var(--field);font-weight:700;font-size:13px;cursor:pointer;border:2px solid transparent}
+#addForm{background:var(--hl)}
+#addForm input[type=text],#addForm input[type=date],#addForm input[inputmode],#addForm .chips label{background:var(--hl-field)}
+#addForm .chips input:checked+label{background:var(--btn);color:var(--on-btn)}
+.tabs button[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--pink)}
+.chips input:checked+label{background:var(--btn);color:var(--on-btn)}
+.chips input:focus-visible+label{border-color:var(--accent)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.btn{border:0;border-radius:var(--r-pill);padding:14px 22px;font-weight:800;font-size:14px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;background:var(--accent);color:var(--on-accent)}
+.btn.dark{background:var(--btn);color:var(--on-btn)}
+.btn.ghost{background:transparent;color:var(--fg);border:2px solid var(--line);padding:9px 16px;font-size:12px}
+.btn.small{padding:9px 16px;font-size:12px}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+form.card{display:grid;gap:14px}
+.hint{font-size:12px;color:var(--muted);margin:0}
+
+/* category bars */
+.cats{display:grid;gap:14px}
+.cat-row{display:grid;gap:6px}
+.cat-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.cat-name{display:flex;align-items:center;gap:8px;font-weight:700;min-width:0}
+.cat-name span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-val{font-weight:700;white-space:nowrap;font-size:14px}
+.cat-val small{color:var(--muted);font-weight:600}
+.bar{height:10px;border-radius:var(--r-pill);background:var(--surface-2);position:relative;overflow:visible}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:inherit}
+.bar .lim{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg);border-radius:2px}
+.bar.over i{background-image:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(0,0,0,.2) 5px 10px)}
+
+/* list */
+.day{margin-top:14px}
+.day:first-child{margin-top:0}
+.day h3{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.item .t{min-width:0}
+.item .t b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .t small{color:var(--muted);font-size:12px}
+.item .a{font-weight:800;white-space:nowrap}
+.x{width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px}
+.x:hover{background:var(--surface-2);color:var(--fg)}
+.confirm{display:flex;gap:6px}
+.confirm button{border:0;border-radius:var(--r-pill);padding:6px 10px;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.confirm .yes{background:var(--bad);color:#fff}
+.confirm .no{background:var(--surface-2)}
+.empty{text-align:center;padding:18px 8px;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-weight:400;font-size:18px;color:var(--fg);text-transform:uppercase;margin-bottom:4px}
+
+/* year */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:700px){ .stats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.stat{background:var(--surface);border-radius:18px;padding:14px 16px;min-width:0}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(20px,4.6vw,28px);line-height:1.1;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.stat.feature{background:var(--btn);color:var(--on-btn)}
+.stat.feature .eyebrow,.stat.feature small{color:inherit;opacity:.8}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;font-weight:700;margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.chartbox{overflow-x:auto}
+.chartbox svg{display:block;width:100%;min-width:560px;height:auto}
+svg .grid-l{stroke:var(--line);stroke-width:1}
+svg text{fill:var(--muted);font-family:var(--body);font-size:11px;font-weight:600}
+svg text.cur{fill:var(--fg);font-weight:800}
+.f-sp{fill:var(--inc-sp)} .f-job{fill:var(--inc-job)} .f-exp{fill:var(--exp)}
+.tablebox{overflow-x:auto;margin:0 -4px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{text-align:right;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
+td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--surface-2)}
+tr.future td{color:var(--muted)}
+tfoot td{font-weight:800;border-bottom:0;border-top:2px solid var(--fg)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+/* goals */
+.plan{display:grid;gap:8px}
+.plan-line{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.plan-line.total{border-top:2px solid var(--fg);padding-top:10px;margin-top:4px;font-weight:800;font-size:17px}
+.lim-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 34px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.lim-row:first-child{border-top:0}
+.lim-row input{padding:8px 12px;font-size:15px;text-align:right}
+.lim-row .confirm{grid-column:1/-1;justify-content:flex-end}
+.addcat{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:12px}
+.prog{display:grid;gap:16px}
+.prog-row{display:grid;gap:6px}
+.prog-row .cat-top b{font-weight:700}
+.euro-in{position:relative}
+.euro-in input{padding-right:34px}
+.euro-in::after{content:"€";position:absolute;right:13px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);pointer-events:none}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--btn);color:var(--on-btn);padding:11px 18px;border-radius:var(--r-pill);font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20;max-width:calc(100vw - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+@media (max-width:420px){ .tabs button{padding:8px 12px} .period .lbl{min-width:8.2em} .minis b{font-size:15px} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="brand">
+        <h1 class="mark"><span>Kam gre</span><span>denar</span></h1>
+        <svg class="zig" viewBox="0 0 44 30" aria-hidden="true"><path d="M20 2 C21.4 10.5 23.5 13.4 31 15 C23.5 16.6 21.4 19.5 20 28 C18.6 19.5 16.5 16.6 9 15 C16.5 13.4 18.6 10.5 20 2 Z" fill="var(--deco-1)"/><circle cx="36" cy="7" r="3.2" fill="var(--accent)"/></svg>
+      </div>
+      <span class="status" id="status">Nalagam</span>
+    </div>
+    <div class="navrow">
+      <div class="tabs" role="tablist" aria-label="Pogled">
+        <button role="tab" id="t-mesec" data-view="mesec" aria-selected="true">Mesec</button>
+        <button role="tab" id="t-leto" data-view="leto" aria-selected="false">Leto</button>
+        <button role="tab" id="t-cilji" data-view="cilji" aria-selected="false">Cilji</button>
+      </div>
+      <div class="period">
+        <button id="prev" aria-label="Prejšnje obdobje">‹</button>
+        <div class="lbl num" id="periodLbl" aria-live="polite">—</div>
+        <button id="next" aria-label="Naslednje obdobje">›</button>
+        <button class="today" id="todayBtn">Danes</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner" hidden></div>
+
+  <!-- MESEC -->
+  <section id="v-mesec">
+    <div class="grid two">
+      <div class="col">
+        <div class="card hero" id="mSummary"></div>
+
+        <form class="card" id="addForm" autocomplete="off">
+          <div>
+            <h2>Nov strošek</h2>
+            <p class="sub">Vpiši sproti, traja pet sekund.</p>
+          </div>
+          <div class="field">
+            <label for="fAmount">Znesek</label>
+            <div class="euro-in"><input id="fAmount" class="amount-in num" inputmode="decimal" placeholder="0,00" required></div>
+          </div>
+          <div class="field">
+            <span class="lbl-s" id="catLbl">Kategorija</span>
+            <div class="chips" id="catChips" role="radiogroup" aria-labelledby="catLbl"></div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="fDate">Datum</label>
+              <input id="fDate" type="date" required>
+            </div>
+            <div class="field">
+              <label for="fNote">Opis</label>
+              <input id="fNote" type="text" placeholder="npr. Mercator" maxlength="80">
+            </div>
+          </div>
+          <button class="btn" type="submit">Dodaj strošek</button>
+        </form>
+
+        <form class="card" id="incomeCard" autocomplete="off">
+          <div>
+            <h2>Prihodki in vlaganje</h2>
+            <p class="sub">Neto zneski, ki so ta mesec prišli na račun, in koliko si vložila. Vpiši in shrani.</p>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="mIncSp">S.p.</label>
+              <div class="euro-in"><input id="mIncSp" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+            <div class="field">
+              <label for="mIncJob">Redna služba</label>
+              <div class="euro-in"><input id="mIncJob" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="mInv">Vloženo ta mesec</label>
+            <div class="euro-in"><input id="mInv" class="num" inputmode="decimal" placeholder="0"></div>
+          </div>
+          <p class="hint">Pri s.p. vpiši, kar ostane po prispevkih in akontaciji dohodnine.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+            <button class="btn dark" type="submit">Shrani</button>
+            <button class="btn ghost" type="button" id="incFromGoals">Vpiši iz ciljev</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <h2>Po kategorijah</h2>
+          <p class="sub">Črtica na traku je tvoj mesečni limit.</p>
+          <div class="cats" id="mCats"></div>
+        </div>
+        <div class="card">
+          <h2>Vsi stroški</h2>
+          <p class="sub" id="mCount"></p>
+          <div id="mList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LETO -->
+  <section id="v-leto" hidden>
+    <div class="grid">
+      <div class="stats" id="yStats"></div>
+      <div class="card">
+        <h2>Prihodki in stroški po mesecih</h2>
+        <p class="sub">Levi stolpec so prihodki (s.p. + služba), desni stroški.</p>
+        <div class="legend">
+          <span><i style="background:var(--inc-sp)"></i>S.p.</span>
+          <span><i style="background:var(--inc-job)"></i>Služba</span>
+          <span><i style="background:var(--exp)"></i>Stroški</span>
+        </div>
+        <div class="chartbox" id="yChart"></div>
+      </div>
+      <div class="grid two">
+        <div class="card">
+          <h2>Mesec za mesecem</h2>
+          <p class="sub">Klikni vrstico za podrobnosti meseca.</p>
+          <div class="tablebox" id="yTable"></div>
+        </div>
+        <div class="card">
+          <h2>Kategorije v letu</h2>
+          <p class="sub">Črtica je letni limit (mesečni × 12).</p>
+          <div class="cats" id="yCats"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CILJI -->
+  <section id="v-cilji" hidden>
+    <div class="grid two">
+      <div class="col">
+        <div class="card" id="goalInc">
+          <h2>Koliko zaslužim</h2>
+          <p class="sub">Pričakovani neto prihodek na mesec.</p>
+          <div class="row2">
+            <div class="field">
+              <label for="gSp">S.p. na mesec</label>
+              <div class="euro-in"><input id="gSp" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+            <div class="field">
+              <label for="gJob">Služba na mesec</label>
+              <div class="euro-in"><input id="gJob" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+          </div>
+          <div class="row2" style="margin-top:12px">
+            <div class="field">
+              <label for="gSave">Varčevanje na mesec</label>
+              <div class="euro-in"><input id="gSave" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+            <div class="field">
+              <label for="gInv">Vlaganje na mesec</label>
+              <div class="euro-in"><input id="gInv" class="num" inputmode="decimal" placeholder="0"></div>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:10px">Varčevanje je denar, ki ostane na računu. Vlaganje so redna vplačila v sklade, ETF ali pokojninsko.</p>
+        </div>
+
+        <div class="card">
+          <h2>Mesečni plan</h2>
+          <p class="sub">Kaj ostane, ko odšteješ limite in varčevanje.</p>
+          <div class="plan num" id="gPlan"></div>
+        </div>
+
+        <div class="card">
+          <h2>Kako ti gre letos</h2>
+          <p class="sub" id="gProgSub"></p>
+          <div class="prog" id="gProgress"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <h2>Limiti stroškov</h2>
+          <p class="sub">Koliko si dovoliš na mesec po kategorijah.</p>
+          <div id="gLimits"></div>
+          <form class="addcat" id="addCat" autocomplete="off">
+            <input id="newCat" type="text" placeholder="Nova kategorija" maxlength="40" aria-label="Ime nove kategorije">
+            <button class="btn dark small" type="submit">Dodaj</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="backupCard" style="margin-top:16px">
+      <h2>Varnostna kopija</h2>
+      <p class="sub">Podatki so shranjeni samo na tej napravi. Enkrat na mesec jih shrani v datoteko, na primer v iCloud Drive, da jih ne izgubiš, če zamenjaš telefon.</p>
+      <p style="margin:0 0 14px" id="bkInfo"></p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <button class="btn dark small" type="button" id="bkExport">Shrani kopijo</button>
+        <button class="btn ghost" type="button" id="bkImportBtn">Uvozi iz datoteke</button>
+        <input type="file" id="bkFile" accept="application/json,.json" hidden>
+      </div>
+      <div id="bkConfirm" style="margin-top:14px" hidden></div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  /* ---------- helpers ---------- */
+  const $ = (id) => document.getElementById(id);
+  const MONTHS = ["januar","februar","marec","april","maj","junij","julij","avgust","september","oktober","november","december"];
+  const MSHORT = ["jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
+  const DAYS = ["ned","pon","tor","sre","čet","pet","sob"];
+  const f0 = new Intl.NumberFormat("sl-SI",{style:"currency",currency:"EUR",maximumFractionDigits:0});
+  const f2 = new Intl.NumberFormat("sl-SI",{style:"currency",currency:"EUR",minimumFractionDigits:2,maximumFractionDigits:2});
+  const fn = new Intl.NumberFormat("sl-SI",{maximumFractionDigits:2});
+  const eur0 = (v) => f0.format(Math.round(v||0));
+  const eur2 = (v) => f2.format(v||0);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const pad = (n) => String(n).padStart(2,"0");
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const sum = (a, f) => a.reduce((s,x)=>s+(f?f(x):x),0);
+  const sleep = (ms) => new Promise(r=>setTimeout(r,ms));
+  function parseAmount(s){
+    s = String(s||"").replace(/\s|€/g,"");
+    if(!s) return null;
+    if(s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+    const n = Number(s);
+    return Number.isFinite(n) ? Math.round(n*100)/100 : NaN;
+  }
+  const now = new Date();
+  const TODAY = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const CUR_YM = TODAY.slice(0,7);
+  const CUR_Y = now.getFullYear();
+  const ymLabel = (ym) => `${MONTHS[+ym.slice(5)-1]} ${ym.slice(0,4)}`;
+  const shiftYm = (ym, d) => { let y=+ym.slice(0,4), m=+ym.slice(5)+d; while(m<1){m+=12;y--} while(m>12){m-=12;y++} return `${y}-${pad(m)}`; };
+  const uidGen = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+  const DEFAULT_CATS = [
+    ["stan","Stanovanje"],["hrana","Hrana in trgovina"],["prevoz","Prevoz"],["racuni","Računi in naročnine"],
+    ["zdravje","Zdravje in lepota"],["obleke","Oblačila"],["prosti","Prosti čas in izleti"],["sp","Stroški s.p."],["ostalo","Ostalo"]
+  ].map(([id,name],i)=>({id,name,c: id==="ostalo"?0:(i%8)+1}));
+  const defaultSettings = () => ({categories: clone(DEFAULT_CATS), goals:{sp:0, job:0, save:0, limits:{}}});
+  const emptyMonth = () => ({expenses:[], income:{sp:null, job:null}, invest:null});
+
+  /* ---------- state ---------- */
+  const state = {
+    settings: defaultSettings(),
+    months: {},
+    demo: false,
+    loaded: false,
+    view: "mesec",
+    ym: CUR_YM,
+    year: CUR_Y,
+    confirmDel: null,
+    confirmCat: null,
+  };
+  const getMonth = (ym) => state.months[ym] || emptyMonth();
+  const cats = () => state.settings.categories;
+  const catById = (id) => cats().find(c=>c.id===id) || {id, name:"Brez kategorije", c:0};
+  const colorOf = (c) => `var(--c${c.c ?? 0})`;
+  const limitOf = (id) => +(state.settings.goals.limits?.[id] || 0);
+  const limitTotal = () => sum(cats(), c=>limitOf(c.id));
+
+  /* ---------- demo data (shown only while the store is empty) ---------- */
+  function demoData(){
+    let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+    const settings = defaultSettings();
+    settings.goals = {sp:1400, job:1650, save:300, invest:200, limits:{stan:650,hrana:420,prevoz:140,racuni:110,zdravje:90,obleke:120,prosti:200,sp:180,ostalo:80}};
+    const months = {};
+    const plan = [["stan",[620,620],"Najemnina",1],["racuni",[18,45],"Telefon",3],["racuni",[9,15],"Spotify",1],
+      ["hrana",[12,85],"Trgovina",9],["prevoz",[35,60],"Gorivo",2],["zdravje",[8,40],"Lekarna",1],["obleke",[25,90],"",1],
+      ["prosti",[15,70],"Večerja",3],["sp",[20,120],"Računovodstvo",1],["ostalo",[5,30],"",1]];
+    const lastM = CUR_Y === now.getFullYear() ? now.getMonth()+1 : 12;
+    for(let m=1;m<=lastM;m++){
+      const ym = `${CUR_Y}-${pad(m)}`; const days = new Date(CUR_Y,m,0).getDate();
+      const maxDay = ym===CUR_YM ? now.getDate() : days;
+      const ex = [];
+      plan.forEach(([cat,[a,b],note,n])=>{ for(let k=0;k<n;k++){ if(cat!=="stan" && rnd()<.2) continue;
+        ex.push({id:uidGen()+k, date:`${ym}-${pad(1+Math.floor(rnd()*maxDay))}`, amount:Math.round((a+rnd()*(b-a))*100)/100, cat, note}); }});
+      months[ym] = {expenses:ex, income:{sp: ym===CUR_YM?null:Math.round(1100+rnd()*700), job:1650}, invest: ym===CUR_YM?null:200};
+    }
+    return {settings, months};
+  }
+
+  /* ---------- storage (only on this device) ---------- */
+  const LS_KEY = "kam-gre-denar-v1";
+  const BK_KEY = "kam-gre-denar-zadnja-kopija";
+  function setStatus(kind, text){ const el=$("status"); el.className="status "+kind; el.textContent=text; }
+  function refreshStatus(){ if(state.demo) setStatus("demo","Primer"); else setStatus("cloud","Na napravi"); }
+  function loadLocal(){
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch(e) {}
+    if(saved && (saved.settings || Object.keys(saved.months||{}).length)){
+      state.settings = saved.settings || defaultSettings(); state.months = saved.months || {}; state.demo = false;
+    } else enterDemo();
+    state.loaded = true; render();
+  }
+  function saveLocal(){
+    try { localStorage.setItem(LS_KEY, JSON.stringify({settings:state.settings, months:state.months})); }
+    catch(e) { toast("Telefon ne dovoli shranjevanja. Preveri, da nisi v zasebnem načinu."); }
+  }
+  function enterDemo(){ const d = demoData(); state.settings=d.settings; state.months=d.months; state.demo=true; }
+  function leaveDemo(){
+    if(!state.demo) return;
+    state.demo=false; state.settings=defaultSettings(); state.months={};
+  }
+  async function initStore(){
+    try { if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch(e) {}
+    loadLocal();
+  }
+  function persist(){ if(state.demo) return; saveLocal(); }
+
+  /* ---------- backup ---------- */
+  let pendingImport = null;
+  function lastBackup(){ try { return localStorage.getItem(BK_KEY); } catch(e) { return null; } }
+  function renderBackup(){
+    const lb = lastBackup();
+    let info;
+    if(state.demo) info = `Ko začneš vpisovati svoje podatke, jih lahko tukaj shraniš v datoteko.`;
+    else if(!lb) info = `<span class="pill warn">Kopije še nisi naredila</span>`;
+    else {
+      const days = Math.round((new Date(TODAY) - new Date(lb)) / 864e5);
+      const d = new Date(lb+"T12:00:00");
+      info = `Zadnja kopija: ${d.getDate()}. ${d.getMonth()+1}. ${d.getFullYear()} ${days>30?'<span class="pill warn">čas je za novo</span>':'<span class="pill good">v redu</span>'}`;
+    }
+    $("bkInfo").innerHTML = info;
+    $("bkExport").disabled = state.demo;
+    const c = $("bkConfirm");
+    if(pendingImport){
+      const n = Object.values(pendingImport.months||{}).reduce((s,m)=>s+(m.expenses?.length||0),0);
+      c.hidden = false;
+      c.innerHTML = `<p style="margin:0 0 10px;font-weight:600">V datoteki je ${n} ${plural(n,"strošek","stroška","stroški","stroškov")}. Uvoz zamenja vse, kar je zdaj v aplikaciji.</p>
+        <span class="confirm"><button class="yes" type="button" id="bkYes">Zamenjaj podatke</button><button class="no" type="button" id="bkNo">Prekliči</button></span>`;
+      $("bkYes").onclick = () => {
+        state.settings = pendingImport.settings || defaultSettings(); state.months = pendingImport.months || {};
+        state.demo = false; pendingImport = null; saveLocal(); render(); toast("Podatki uvoženi.");
+      };
+      $("bkNo").onclick = () => { pendingImport = null; renderBackup(); };
+    } else { c.hidden = true; c.innerHTML = ""; }
+  }
+  async function exportBackup(){
+    if(state.demo) return;
+    const data = JSON.stringify({app:"kam-gre-denar", verzija:1, izvozeno:new Date().toISOString(), settings:state.settings, months:state.months});
+    const name = `kam-gre-denar-${TODAY}.json`;
+    const file = new File([data], name, {type:"application/json"});
+    const done = () => { try { localStorage.setItem(BK_KEY, TODAY); } catch(e) {} renderBackup(); };
+    try {
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:"Kam gre denar: kopija"});
+        done(); toast("Kopija shranjena."); return;
+      }
+    } catch(e) { if(e && e.name==="AbortError") return; }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a"); a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    done(); toast("Kopija prenesena.");
+  }
+  $("bkExport").onclick = exportBackup;
+  $("bkImportBtn").onclick = () => $("bkFile").click();
+  $("bkFile").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if(!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if(!d || d.app!=="kam-gre-denar" || typeof d.months!=="object") throw new Error("format");
+      pendingImport = {settings:d.settings, months:d.months};
+      renderBackup();
+    } catch(err) { toast("To ni datoteka s kopijo te aplikacije."); }
+  });
+
+  /* ---------- view switching ---------- */
+  function setView(v){
+    if(!["mesec","leto","cilji"].includes(v)) v="mesec";
+    state.view = v;
+    ["mesec","leto","cilji"].forEach(n=>{ $("v-"+n).hidden = n!==v; $("t-"+n).setAttribute("aria-selected", String(n===v)); });
+    if(location.hash.slice(1)!==v){ try{ history.replaceState(null,"","#"+v); }catch(e){ location.hash=v; } }
+    render();
+  }
+  document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+  window.addEventListener("hashchange",()=>setView(location.hash.slice(1)));
+  $("prev").onclick = () => step(-1);
+  $("next").onclick = () => step(1);
+  $("todayBtn").onclick = () => { state.ym=CUR_YM; state.year=CUR_Y; syncDate(); render(); };
+  function step(d){
+    if(state.view==="mesec"){ state.ym = shiftYm(state.ym,d); state.year = +state.ym.slice(0,4); syncDate(); }
+    else { state.year += d; state.ym = `${state.year}-${state.ym.slice(5)}`; }
+    state.confirmDel = null; render();
+  }
+  function syncDate(){
+    const f = $("fDate");
+    f.value = state.ym===CUR_YM ? TODAY : `${state.ym}-01`;
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    refreshStatus();
+    $("periodLbl").textContent = state.view==="mesec" ? ymLabel(state.ym) : String(state.year);
+    renderBanner();
+    renderChips();
+    if(state.view==="mesec") renderMonth();
+    else if(state.view==="leto") renderYear();
+    else renderGoals();
+    renderBackup();
+  }
+
+  function renderBanner(){
+    const b = $("banner");
+    if(state.demo && state.loaded){
+      b.hidden = false; b.className = "banner";
+      b.innerHTML = `<p>To so izmišljeni primeri, da vidiš, kako izgleda. Ko vpišeš prvi strošek ali cilj, izginejo in začneš s praznim.</p><button class="btn small" type="button" id="clearDemo">Začni s praznim</button>`;
+      $("clearDemo").onclick = () => { leaveDemo(); persist("settings"); render(); toast("Začela si s praznim."); };
+    } else b.hidden = true;
+  }
+
+  let chipSig = "";
+  function renderChips(){
+    const sig = JSON.stringify(cats().map(c=>[c.id,c.name,c.c]));
+    if(sig===chipSig) return; chipSig = sig;
+    const box = $("catChips"); const prev = box.querySelector("input:checked")?.value;
+    box.innerHTML = cats().map((c,i)=>`<input type="radio" name="cat" id="cat-${esc(c.id)}" value="${esc(c.id)}"><label for="cat-${esc(c.id)}"><span class="dot" style="background:${colorOf(c)}"></span>${esc(c.name)}</label>`).join("");
+    const pick = box.querySelector(`input[value="${CSS.escape(prev||"")}"]`) || box.querySelector('input[value="hrana"]') || box.querySelector("input");
+    if(pick) pick.checked = true;
+  }
+
+  function renderMonth(){
+    const m = getMonth(state.ym);
+    const ex = m.expenses;
+    const spent = sum(ex, e=>e.amount);
+    const lim = limitTotal();
+    const incSp = m.income?.sp, incJob = m.income?.job;
+    const income = (incSp||0)+(incJob||0);
+    const inv = m.invest ?? null;
+    const left = income - spent - (inv||0);
+    const g = state.settings.goals;
+    const pct = lim>0 ? Math.min(100, spent/lim*100) : 0;
+    const over = lim>0 && spent>lim;
+    let status = "";
+    if(lim>0) status = over ? `<span class="pill">${eur0(spent-lim)} čez limit</span>` : `<span class="pill" style="background:transparent;border:1.5px solid currentColor;color:inherit">še ${eur0(lim-spent)} do limita</span>`;
+    $("mSummary").innerHTML = `
+      <div class="eyebrow">Porabljeno · ${esc(ymLabel(state.ym))}</div>
+      <div class="big num">${eur0(spent)}</div>
+      <p class="of num">${lim>0 ? `od ${eur0(lim)} mesečnega limita` : `Limit nastaviš v zavihku Cilji.`} ${status}</p>
+      ${lim>0 ? `<div class="meter${over?" over":""}" role="img" aria-label="${Math.round(spent/lim*100)} % limita"><i style="width:${pct}%"></i></div>` : ""}
+      <div class="minis num">
+        <div class="mini"><span>Prihodki</span><b>${eur0(income)}</b></div>
+        <div class="mini"><span>Ostane</span><b>${income||spent ? eur0(left) : "—"}</b></div>
+        <div class="mini"><span>Vloženo</span><b>${inv!=null ? eur0(inv) : (g.invest ? `0 / ${eur0(g.invest)}` : "—")}</b></div>
+      </div>`;
+
+    // income inputs (don't overwrite while typing)
+    fillInput($("mIncSp"), incSp, g.sp ? `cilj ${fn.format(g.sp)}` : "0");
+    fillInput($("mIncJob"), incJob, g.job ? `cilj ${fn.format(g.job)}` : "0");
+    fillInput($("mInv"), inv, g.invest ? `cilj ${fn.format(g.invest)}` : "0");
+
+    // categories
+    const byCat = {}; ex.forEach(e=>{ byCat[e.cat]=(byCat[e.cat]||0)+e.amount; });
+    const ids = [...cats().map(c=>c.id), ...Object.keys(byCat).filter(id=>!cats().some(c=>c.id===id))];
+    const rows = ids.map(id=>({c:catById(id), s:byCat[id]||0, l:limitOf(id)})).filter(r=>r.s>0||r.l>0).sort((a,b)=>b.s-a.s);
+    $("mCats").innerHTML = rows.length ? rows.map(r=>catBar(r.c, r.s, r.l)).join("") :
+      `<div class="empty"><b>Še nič</b>Ko dodaš strošek ali nastaviš limite, se pokažejo tukaj.</div>`;
+
+    // list
+    $("mCount").textContent = ex.length ? `${ex.length} ${plural(ex.length,"vnos","vnosa","vnosi","vnosov")} · skupaj ${eur2(spent)}` : "Ta mesec še ni vnosov.";
+    if(!ex.length){
+      $("mList").innerHTML = state.loaded ? `<div class="empty"><b>Prazno</b>Dodaj prvi strošek v obrazcu »Nov strošek«.</div>` : `<div class="empty">Nalagam tvoje podatke …</div>`;
+    } else {
+      const sorted = [...ex].sort((a,b)=> b.date.localeCompare(a.date) || (b.t||0)-(a.t||0));
+      const groups = {}; sorted.forEach(e=>{ (groups[e.date] ||= []).push(e); });
+      $("mList").innerHTML = Object.entries(groups).map(([d,items])=>{
+        const dt = new Date(d+"T12:00:00");
+        return `<div class="day"><h3><span>${DAYS[dt.getDay()]}, ${dt.getDate()}. ${dt.getMonth()+1}.</span><span class="num">${eur2(sum(items,i=>i.amount))}</span></h3>
+          ${items.map(e=>{ const c=catById(e.cat);
+            return `<div class="item"><span class="dot" style="background:${colorOf(c)}"></span>
+              <div class="t"><b>${esc(e.note || c.name)}</b>${e.note?`<small>${esc(c.name)}</small>`:""}</div>
+              <span class="a num">${eur2(e.amount)}</span>
+              ${state.confirmDel===e.id
+                ? `<span class="confirm"><button class="yes" data-del="${esc(e.id)}">Izbriši</button><button class="no" data-cancel>Ne</button></span>`
+                : `<button class="x" data-ask="${esc(e.id)}" aria-label="Izbriši ${esc(e.note||c.name)}">×</button>`}
+            </div>`; }).join("")}</div>`;
+      }).join("");
+    }
+  }
+  function plural(n,a,b,c,d){ const r=n%100; return r===1?a:r===2?b:(r===3||r===4)?c:d; }
+  function fillInput(el, val, ph){
+    el.placeholder = ph;
+    if(document.activeElement===el) return;
+    el.value = (val===null || val===undefined) ? "" : fn.format(val);
+  }
+  function catBar(c, s, l){
+    const max = Math.max(s, l, 0.01);
+    const over = l>0 && s>l;
+    return `<div class="cat-row">
+      <div class="cat-top"><span class="cat-name"><span class="dot" style="background:${colorOf(c)}"></span><span>${esc(c.name)}</span></span>
+      <span class="cat-val num">${eur0(s)}${l>0?` <small>/ ${eur0(l)}</small>`:""}${over?` <span class="pill bad">+${eur0(s-l)}</span>`:""}</span></div>
+      <div class="bar${over?" over":""}"><i style="width:${s/max*100}%;background:${colorOf(c)}"></i>${l>0?`<span class="lim" style="left:calc(${l/max*100}% - 1px)"></span>`:""}</div>
+    </div>`;
+  }
+
+  // list actions
+  $("mList").addEventListener("click",(e)=>{
+    const t = e.target.closest("button"); if(!t) return;
+    if(t.dataset.ask){ state.confirmDel = t.dataset.ask; renderMonth(); $("mList").querySelector(".confirm .no")?.focus(); }
+    else if("cancel" in t.dataset){ state.confirmDel=null; renderMonth(); }
+    else if(t.dataset.del){
+      const m = state.months[state.ym]; if(!m) return;
+      m.expenses = m.expenses.filter(x=>x.id!==t.dataset.del);
+      state.confirmDel=null; persist("m-"+state.ym); render(); toast("Strošek izbrisan.");
+    }
+  });
+
+  // add expense
+  $("addForm").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const amt = parseAmount($("fAmount").value);
+    if(!amt || amt<=0 || Number.isNaN(amt)){ toast("Vpiši znesek, na primer 12,50."); $("fAmount").focus(); return; }
+    const cat = $("catChips").querySelector("input:checked")?.value || "ostalo";
+    const date = $("fDate").value || TODAY;
+    const note = $("fNote").value.trim();
+    leaveDemo();
+    const ym = date.slice(0,7);
+    const m = state.months[ym] || (state.months[ym] = emptyMonth());
+    m.expenses.push({id:uidGen(), date, amount:amt, cat, note, t:Date.now()});
+    persist("m-"+ym);
+    $("fAmount").value = ""; $("fNote").value = "";
+    if(ym!==state.ym) toast(`Dodano v ${ymLabel(ym)}.`); else toast(`Dodano: ${eur2(amt)} · ${catById(cat).name}`);
+    render(); $("fAmount").focus();
+  });
+
+  // income per month: saved with the button (or Enter)
+  $("incomeCard").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const sp = parseAmount($("mIncSp").value), job = parseAmount($("mIncJob").value), inv = parseAmount($("mInv").value);
+    if(Number.isNaN(sp) || Number.isNaN(job) || Number.isNaN(inv)){ toast("Tega zneska ne razumem. Vpiši na primer 1450 ali 1.450,50."); return; }
+    leaveDemo();
+    const m = state.months[state.ym] || (state.months[state.ym] = emptyMonth());
+    m.income = {sp, job}; m.invest = inv;
+    persist("m-"+state.ym);
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    render(); toast(`Shranjeno za ${ymLabel(state.ym)}.`);
+  });
+  $("incFromGoals").onclick = () => {
+    const g = state.settings.goals;
+    if(!g.sp && !g.job && !g.invest){ toast("V zavihku Cilji najprej vpiši pričakovane prihodke."); return; }
+    leaveDemo();
+    const m = state.months[state.ym] || (state.months[state.ym] = emptyMonth());
+    m.income = {sp: g.sp||0, job: g.job||0}; m.invest = g.invest||0;
+    persist("m-"+state.ym); render(); toast("Vpisano iz ciljev.");
+  };
+
+  /* ---------- year ---------- */
+  function yearRows(y){
+    return Array.from({length:12},(_,i)=>{
+      const ym = `${y}-${pad(i+1)}`; const m = state.months[ym];
+      const sp = m?.income?.sp||0, job = m?.income?.job||0, spent = m ? sum(m.expenses,e=>e.amount) : 0;
+      const inv = m?.invest||0;
+      const has = !!m && (m.expenses.length>0 || m.income?.sp!=null || m.income?.job!=null || m.invest!=null);
+      return {ym, i, sp, job, inc:sp+job, spent, inv, left:sp+job-spent-inv, has, future: ym>CUR_YM};
+    });
+  }
+  function niceMax(v){ if(v<=0) return 100; const p=10**Math.floor(Math.log10(v)); const n=v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; }
+  function short(v){ return v>=1000 ? fn.format(Math.round(v/100)/10)+" k" : fn.format(Math.round(v)); }
+
+  function renderYear(){
+    const y = state.year; const rows = yearRows(y);
+    const tInc = sum(rows,r=>r.inc), tSp = sum(rows,r=>r.sp), tJob = sum(rows,r=>r.job), tExp = sum(rows,r=>r.spent);
+    const tInv = sum(rows,r=>r.inv);
+    const left = tInc - tExp - tInv; const rate = tInc>0 ? (left+tInv)/tInc*100 : null;
+    $("yStats").innerHTML = `
+      <div class="stat feature"><div class="eyebrow">Ostane v ${y}</div><b class="num">${eur0(left)}</b><small class="num">${rate===null?"Ni vpisanih prihodkov":`+ vloženo ${eur0(tInv)} · ${fn.format(Math.round(rate))} % prihodkov ostane ali je vloženih`}</small></div>
+      <div class="stat"><div class="eyebrow">Prihodki</div><b class="num">${eur0(tInc)}</b><small class="num">s.p. ${eur0(tSp)} · služba ${eur0(tJob)}</small></div>
+      <div class="stat"><div class="eyebrow">Stroški</div><b class="num">${eur0(tExp)}</b><small class="num">${(()=>{const n=rows.filter(r=>r.spent>0).length; return n?`povprečno ${eur0(tExp/n)} na mesec`:"Še ni stroškov";})()}</small></div>
+      <div class="stat"><div class="eyebrow">Limit v letu</div><b class="num">${limitTotal()?eur0(limitTotal()*12):"—"}</b><small class="num">${limitTotal()?`porabljeno ${fn.format(Math.round(tExp/(limitTotal()*12)*100))} %`:"Nastavi v Ciljih"}</small></div>`;
+
+    // chart
+    const W=720,H=270,pl=46,pr=8,pt=14,pb=30;
+    const max = niceMax(Math.max(...rows.map(r=>Math.max(r.inc,r.spent)),0));
+    const Y = (v)=> pt+(H-pt-pb)*(1-v/max);
+    const bw=(W-pl-pr)/12, b=Math.min(20,bw*.32);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Prihodki in stroški po mesecih ${y}">`;
+    for(let k=0;k<=4;k++){ const v=max*k/4, yy=Y(v); s+=`<line class="grid-l" x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}"/><text x="${pl-8}" y="${yy+4}" text-anchor="end">${short(v)}</text>`; }
+    rows.forEach(r=>{
+      const cx = pl+r.i*bw+bw/2;
+      if(r.sp>0) s+=`<rect class="f-sp" x="${cx-b-1.5}" y="${Y(r.sp)}" width="${b}" height="${Y(0)-Y(r.sp)}" rx="3"><title>${MONTHS[r.i]}: s.p. ${eur0(r.sp)}</title></rect>`;
+      if(r.job>0) s+=`<rect class="f-job" x="${cx-b-1.5}" y="${Y(r.inc)}" width="${b}" height="${Y(r.sp)-Y(r.inc)}" rx="3"><title>${MONTHS[r.i]}: služba ${eur0(r.job)}</title></rect>`;
+      if(r.spent>0) s+=`<rect class="f-exp" x="${cx+1.5}" y="${Y(r.spent)}" width="${b}" height="${Y(0)-Y(r.spent)}" rx="3"><title>${MONTHS[r.i]}: stroški ${eur0(r.spent)}</title></rect>`;
+      s+=`<text x="${cx}" y="${H-10}" text-anchor="middle" class="${r.ym===CUR_YM?"cur":""}">${MSHORT[r.i]}</text>`;
+    });
+    if(limitTotal()>0 && limitTotal()<=max){ const yy=Y(limitTotal()); s+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-pr}" y="${yy-5}" text-anchor="end" class="cur">limit ${short(limitTotal())}</text>`; }
+    s += `</svg>`;
+    $("yChart").innerHTML = s;
+
+    // table
+    $("yTable").innerHTML = `<table class="num"><thead><tr><th>Mesec</th><th>S.p.</th><th>Služba</th><th>Stroški</th><th>Vloženo</th><th>Ostane</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr data-ym="${r.ym}" class="${r.future&&!r.has?"future":""}"><td>${MONTHS[r.i]}</td>
+        <td>${r.has?eur0(r.sp):"—"}</td><td>${r.has?eur0(r.job):"—"}</td><td>${r.has?eur0(r.spent):"—"}</td><td>${r.has?eur0(r.inv):"—"}</td>
+        <td class="${r.has?(r.left>=0?"pos":"neg"):""}">${r.has?eur0(r.left):"—"}</td></tr>`).join("")}
+      </tbody><tfoot><tr><td>Skupaj</td><td>${eur0(tSp)}</td><td>${eur0(tJob)}</td><td>${eur0(tExp)}</td><td>${eur0(tInv)}</td><td class="${left>=0?"pos":"neg"}">${eur0(left)}</td></tr></tfoot></table>`;
+
+    // categories
+    const byCat = {};
+    rows.forEach(r=>{ const m=state.months[r.ym]; m?.expenses.forEach(e=>{ byCat[e.cat]=(byCat[e.cat]||0)+e.amount; }); });
+    const ids = [...new Set([...cats().map(c=>c.id), ...Object.keys(byCat)])];
+    const cr = ids.map(id=>({c:catById(id), s:byCat[id]||0, l:limitOf(id)*12})).filter(r=>r.s>0||r.l>0).sort((a,b)=>b.s-a.s);
+    $("yCats").innerHTML = cr.length ? cr.map(r=>catBar(r.c,r.s,r.l)).join("") : `<div class="empty"><b>Še nič</b>V tem letu ni stroškov.</div>`;
+  }
+  $("yTable").addEventListener("click",(e)=>{ const tr=e.target.closest("tr[data-ym]"); if(!tr) return; state.ym=tr.dataset.ym; syncDate(); setView("mesec"); });
+
+  /* ---------- goals ---------- */
+  function renderGoals(){
+    const g = state.settings.goals;
+    fillInput($("gSp"), g.sp||null, "0"); fillInput($("gJob"), g.job||null, "0"); fillInput($("gSave"), g.save||null, "0"); fillInput($("gInv"), g.invest||null, "0");
+
+    // limits list (skip while typing in it)
+    const box = $("gLimits");
+    if(!box.contains(document.activeElement) || document.activeElement===document.body){
+      box.innerHTML = cats().map(c=>`<div class="lim-row">
+        <label class="cat-name" for="lim-${esc(c.id)}"><span class="dot" style="background:${colorOf(c)}"></span><span>${esc(c.name)}</span></label>
+        <div class="euro-in"><input id="lim-${esc(c.id)}" class="num" inputmode="decimal" data-lim="${esc(c.id)}" value="${limitOf(c.id)?fn.format(limitOf(c.id)):""}" placeholder="0"></div>
+        <button class="x" type="button" data-askcat="${esc(c.id)}" aria-label="Odstrani kategorijo ${esc(c.name)}">×</button>
+        ${state.confirmCat===c.id?`<span class="confirm"><span class="hint" style="align-self:center">Odstranim kategorijo? Stari stroški ostanejo.</span><button class="yes" type="button" data-delcat="${esc(c.id)}">Odstrani</button><button class="no" type="button" data-cancelcat>Ne</button></span>`:""}
+      </div>`).join("");
+    }
+
+    // plan
+    const inc = (g.sp||0)+(g.job||0), lim = limitTotal(), save = g.save||0, invest = g.invest||0, free = inc-lim-save-invest;
+    $("gPlan").innerHTML = `
+      <div class="plan-line"><span>Prihodki (s.p. + služba)</span><span>${eur0(inc)}</span></div>
+      <div class="plan-line"><span>− limiti stroškov</span><span>${eur0(lim)}</span></div>
+      <div class="plan-line"><span>− varčevanje</span><span>${eur0(save)}</span></div>
+      <div class="plan-line"><span>− vlaganje</span><span>${eur0(invest)}</span></div>
+      <div class="plan-line total"><span>${free>=0?"Nerazporejeno":"Plan presega prihodke"}</span><span class="${free>=0?"pos":"neg"}">${eur0(free)}</span></div>
+      <p class="hint" style="margin-top:6px">${inc? `Na leto: ${eur0(inc*12)} prihodkov, od tega s.p. ${eur0((g.sp||0)*12)}. V letu privarčuješ ${eur0(save*12)} in vložiš ${eur0(invest*12)}.` : "Vpiši pričakovane prihodke, da vidiš, koliko ti ostane."}</p>`;
+
+    // progress this year
+    const y = state.year; const rows = yearRows(y);
+    const elapsed = y<CUR_Y ? 12 : y>CUR_Y ? 0 : now.getMonth()+1;
+    const upto = rows.slice(0, elapsed);
+    const aSp = sum(upto,r=>r.sp), aJob = sum(upto,r=>r.job), aExp = sum(upto,r=>r.spent), aInv = sum(upto,r=>r.inv), aSave = aSp+aJob-aExp-aInv;
+    $("gProgSub").textContent = elapsed ? `${y}, januar–${MONTHS[elapsed-1]} (${elapsed} ${plural(elapsed,"mesec","meseca","meseci","mesecev")}). Primerjava z deležem letnega cilja.` : `${y} se še ni začelo.`;
+    const prog = (label, actual, target, invert) => {
+      if(!target) return `<div class="prog-row"><div class="cat-top"><b>${label}</b><span class="cat-val num">${eur0(actual)} <small>cilj ni nastavljen</small></span></div></div>`;
+      const p = actual/target*100; const ok = invert ? actual<=target : actual>=target;
+      const max = Math.max(actual,target);
+      return `<div class="prog-row"><div class="cat-top"><b>${label}</b><span class="cat-val num">${eur0(actual)} <small>/ ${eur0(target)}</small> <span class="pill ${ok?"good":(invert?"bad":"warn")}">${fn.format(Math.round(p))} %</span></span></div>
+        <div class="bar"><i style="width:${actual/max*100}%;background:${ok?"var(--good)":(invert?"var(--bad)":"var(--warn)")}"></i><span class="lim" style="left:calc(${target/max*100}% - 1px)"></span></div></div>`;
+    };
+    $("gProgress").innerHTML = elapsed ? [
+      prog("Zaslužek s.p.", aSp, (g.sp||0)*elapsed),
+      prog("Plača iz službe", aJob, (g.job||0)*elapsed),
+      prog("Stroški (manj je bolje)", aExp, lim*elapsed, true),
+      prog("Privarčevano", Math.max(0,aSave), save*elapsed),
+      prog("Vloženo", aInv, invest*elapsed),
+    ].join("") : `<div class="empty">Napredek se pokaže, ko se leto začne.</div>`;
+  }
+
+  function saveGoal(key, el){
+    const v = parseAmount(el.value);
+    if(Number.isNaN(v)){ toast("Tega zneska ne razumem."); return; }
+    if((state.settings.goals[key]||0)===(v||0)) return;
+    leaveDemo();
+    state.settings.goals[key] = v||0; persist("settings"); render();
+  }
+  $("gSp").addEventListener("change",()=>saveGoal("sp",$("gSp")));
+  $("gJob").addEventListener("change",()=>saveGoal("job",$("gJob")));
+  $("gSave").addEventListener("change",()=>saveGoal("save",$("gSave")));
+  $("gInv").addEventListener("change",()=>saveGoal("invest",$("gInv")));
+  $("gLimits").addEventListener("change",(e)=>{
+    const id = e.target.dataset.lim; if(!id) return;
+    const v = parseAmount(e.target.value);
+    if(Number.isNaN(v)){ toast("Tega zneska ne razumem."); return; }
+    if(limitOf(id)===(v||0)) return;
+    const wasDemo = state.demo; leaveDemo();
+    state.settings.goals.limits = state.settings.goals.limits || {};
+    state.settings.goals.limits[id] = v||0; persist("settings");
+    if(wasDemo){ e.target.blur(); }
+    render();
+  });
+  $("gLimits").addEventListener("focusout",()=>{ setTimeout(()=>{ if(!$("gLimits").contains(document.activeElement)) render(); },0); });
+  $("gLimits").addEventListener("click",(e)=>{
+    const t = e.target.closest("button"); if(!t) return;
+    if(t.dataset.askcat){ state.confirmCat=t.dataset.askcat; t.blur(); renderGoals(); }
+    else if("cancelcat" in t.dataset){ state.confirmCat=null; t.blur(); renderGoals(); }
+    else if(t.dataset.delcat){
+      leaveDemo();
+      state.settings.categories = cats().filter(c=>c.id!==t.dataset.delcat);
+      if(state.settings.goals.limits) delete state.settings.goals.limits[t.dataset.delcat];
+      state.confirmCat=null; t.blur(); persist("settings"); render(); toast("Kategorija odstranjena.");
+    }
+  });
+  $("addCat").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const name = $("newCat").value.trim(); if(!name) return;
+    if(cats().some(c=>c.name.toLowerCase()===name.toLowerCase())){ toast("Ta kategorija že obstaja."); return; }
+    leaveDemo();
+    const used = cats().map(c=>c.c); let c = 1; for(let k=1;k<=8;k++){ if(!used.includes(k)){ c=k; break; } c = (cats().length%8)+1; }
+    state.settings.categories.push({id:"k"+uidGen(), name, c});
+    $("newCat").value=""; persist("settings"); render(); toast(`Dodano: ${name}`);
+  });
+
+  /* ---------- toast ---------- */
+  let tt;
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),2600); }
+
+  /* ---------- boot ---------- */
+  syncDate();
+  setView(location.hash.slice(1) || "mesec");
+  initStore();
+  if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
